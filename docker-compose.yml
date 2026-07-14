@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: skillswap-backend
+    ports:
+      - "8002:8002"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    # uvicorn provides automatic reloading if we use the --reload flag,
+    # but here we rely on the command in the Dockerfile.
+    # To run with reload in dev, uncomment the command below:
+    # command: uvicorn main:app --host 0.0.0.0 --port 8002 --reload
+    restart: unless-stopped
