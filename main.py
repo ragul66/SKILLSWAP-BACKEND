@@ -503,6 +503,28 @@ async def create_session(
     
     return db_session
 
+@app.post("/sessions/{session_id}/cancel", response_model=SessionResponse)
+def cancel_session(
+    session_id: int, 
+    current_user: models.User = Depends(get_current_user), 
+    db: Session = Depends(get_db)
+):
+    """Cancels a pending session."""
+    session = db.query(models.Session).filter(models.Session.session_id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+        
+    if session.seeker_id != current_user.user_id:
+        raise HTTPException(status_code=403, detail="Only the seeker who opened the session can cancel it.")
+        
+    if session.status != "pending":
+        raise HTTPException(status_code=400, detail="Only pending sessions can be cancelled.")
+
+    session.status = "cancelled"
+    db.commit()
+    db.refresh(session)
+    return session
+
 @app.get("/sessions/pending/", response_model=List[SessionResponse])
 def get_pending_sessions(db: Session = Depends(get_db)):
     """Lists all pending help tickets."""
