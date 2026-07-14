@@ -232,10 +232,10 @@ async def callback_google(code: str, db: Session = Depends(get_db)):
             db.refresh(user)
             
         token = create_access_token({"sub": str(user.user_id), "username": user.username, "email": user.email})
-        return RedirectResponse(f"{FRONTEND_URL}/auth/callback?token={token}")
+        return RedirectResponse(f"{FRONTEND_URL}/?token={token}")
     except Exception as e:
         print(f"Google Callback Error: {e}")
-        return RedirectResponse(f"{FRONTEND_URL}/login?error=google_auth_failed")
+        return RedirectResponse(f"{FRONTEND_URL}/?error=google_auth_failed")
 
 @app.get("/auth/login/github")
 def login_github():
@@ -274,10 +274,10 @@ async def callback_github(code: str, db: Session = Depends(get_db)):
             db.refresh(user)
             
         token = create_access_token({"sub": str(user.user_id), "username": user.username, "email": user.email})
-        return RedirectResponse(f"{FRONTEND_URL}/auth/callback?token={token}")
+        return RedirectResponse(f"{FRONTEND_URL}/?token={token}")
     except Exception as e:
         print(f"GitHub Callback Error: {e}")
-        return RedirectResponse(f"{FRONTEND_URL}/login?error=github_auth_failed")
+        return RedirectResponse(f"{FRONTEND_URL}/?error=github_auth_failed")
 
 
 # --- Core Skill-Swap API Routes ---
