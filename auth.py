@@ -21,8 +21,8 @@ GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
 GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID", "")
 GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET", "")
 
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5174")
-BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8002")
+FRONTEND_URL = os.getenv("https://skillswap-sigma-self.vercel.app", "http://localhost:5173")
+BACKEND_URL = os.getenv("https://skillswap-backend-tpd8.onrender.com", "http://localhost:8002")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token", auto_error=False)
 
