@@ -653,6 +653,31 @@ async def resolve_session(
 
     return session
 
+@app.post("/sessions/{session_id}/abandon", response_model=SessionResponse)
+async def abandon_session(
+    session_id: int, 
+    current_user: models.User = Depends(get_current_user), 
+    db: Session = Depends(get_db)
+):
+    """Abandons/cancels an active session when someone leaves the room."""
+    session = db.query(models.Session).filter(models.Session.session_id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+        
+    if session.status != "active" and session.status != "pending":
+        raise HTTPException(status_code=400, detail="Only active or pending sessions can be abandoned.")
+        
+    if session.seeker_id != current_user.user_id and session.helper_id != current_user.user_id:
+        raise HTTPException(status_code=403, detail="You are not a participant in this session.")
+
+    session.status = "cancelled"
+    db.commit()
+    db.refresh(session)
+    
+    # Notify the other participant to leave
+    await presence_manager.broadcast_chat_message(session.session_id, {"type": "session_abandoned", "session_id": session.session_id})
+    return session
+
 @app.get("/sessions/active", response_model=Optional[SessionResponse])
 def get_my_active_session(current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Retrieves the active ongoing session for the logged-in user, if any."""
